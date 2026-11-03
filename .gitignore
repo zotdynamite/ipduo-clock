@@ -1,0 +1,13 @@
+.DS_Store
+.build/
+.swiftpm/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.moved-aside
+.swiftpm
+Package.resolved
+*.xcresult
+ci-toolchain.txt
+ci-xcodebuild.log
+ci-destination.txt

@@ -1,0 +1,37 @@
+// Enables iPhone Duo APIs when the active SDK is new enough.
+// ArrangementView, ReservedRegion, and the vertical toolbar modifiers need iOS 27.1.
+// backgroundExtensionEffect needs iOS 26.
+// If a future Xcode does not match these patterns, add the flags in
+// Build Settings → Active Compilation Conditions:
+//   IPDUO_HAS_IOS26_SDK
+//   IPDUO_HAS_DUO_SDK
+
+IPDUO_IOS26_FLAGS[sdk=iphoneos26*] = IPDUO_HAS_IOS26_SDK
+IPDUO_IOS26_FLAGS[sdk=iphonesimulator26*] = IPDUO_HAS_IOS26_SDK
+IPDUO_IOS26_FLAGS[sdk=iphoneos27*] = IPDUO_HAS_IOS26_SDK
+IPDUO_IOS26_FLAGS[sdk=iphonesimulator27*] = IPDUO_HAS_IOS26_SDK
+IPDUO_IOS26_FLAGS[sdk=iphoneos28*] = IPDUO_HAS_IOS26_SDK
+IPDUO_IOS26_FLAGS[sdk=iphonesimulator28*] = IPDUO_HAS_IOS26_SDK
+IPDUO_IOS26_FLAGS[sdk=iphoneos29*] = IPDUO_HAS_IOS26_SDK
+IPDUO_IOS26_FLAGS[sdk=iphonesimulator29*] = IPDUO_HAS_IOS26_SDK
+IPDUO_IOS26_FLAGS[sdk=iphoneos30*] = IPDUO_HAS_IOS26_SDK
+IPDUO_IOS26_FLAGS[sdk=iphonesimulator30*] = IPDUO_HAS_IOS26_SDK
+
+IPDUO_DUO_FLAGS[sdk=iphoneos27.1*] = IPDUO_HAS_DUO_SDK
+IPDUO_DUO_FLAGS[sdk=iphonesimulator27.1*] = IPDUO_HAS_DUO_SDK
+IPDUO_DUO_FLAGS[sdk=iphoneos27.2*] = IPDUO_HAS_DUO_SDK
+IPDUO_DUO_FLAGS[sdk=iphonesimulator27.2*] = IPDUO_HAS_DUO_SDK
+IPDUO_DUO_FLAGS[sdk=iphoneos27.3*] = IPDUO_HAS_DUO_SDK
+IPDUO_DUO_FLAGS[sdk=iphonesimulator27.3*] = IPDUO_HAS_DUO_SDK
+IPDUO_DUO_FLAGS[sdk=iphoneos27.4*] = IPDUO_HAS_DUO_SDK
+IPDUO_DUO_FLAGS[sdk=iphonesimulator27.4*] = IPDUO_HAS_DUO_SDK
+IPDUO_DUO_FLAGS[sdk=iphoneos27.5*] = IPDUO_HAS_DUO_SDK
+IPDUO_DUO_FLAGS[sdk=iphonesimulator27.5*] = IPDUO_HAS_DUO_SDK
+IPDUO_DUO_FLAGS[sdk=iphoneos28*] = IPDUO_HAS_DUO_SDK
+IPDUO_DUO_FLAGS[sdk=iphonesimulator28*] = IPDUO_HAS_DUO_SDK
+IPDUO_DUO_FLAGS[sdk=iphoneos29*] = IPDUO_HAS_DUO_SDK
+IPDUO_DUO_FLAGS[sdk=iphonesimulator29*] = IPDUO_HAS_DUO_SDK
+IPDUO_DUO_FLAGS[sdk=iphoneos30*] = IPDUO_HAS_DUO_SDK
+IPDUO_DUO_FLAGS[sdk=iphonesimulator30*] = IPDUO_HAS_DUO_SDK
+
+SWIFT_ACTIVE_COMPILATION_CONDITIONS = $(inherited) $(IPDUO_IOS26_FLAGS) $(IPDUO_DUO_FLAGS)

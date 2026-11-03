@@ -1,0 +1,53 @@
+name: iOS
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "screenshots/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ios:
+    name: Test and screenshot
+    runs-on: xcode-27
+    timeout-minutes: 50
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode, test, and capture screenshots
+        run: bash Scripts/ios-ci.sh
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: screenshots
+          if-no-files-found: warn
+
+      - name: Upload test result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcresult
+          path: TestResults.xcresult
+          if-no-files-found: warn
+
+      - name: Upload toolchain notes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: toolchain
+          path: |
+            ci-toolchain.txt
+            ci-xcodebuild.log
+          if-no-files-found: warn

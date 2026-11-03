@@ -241,7 +241,11 @@ extension ToolbarContent {
     @ToolbarContentBuilder
     func duoPriorityHigh() -> some ToolbarContent {
         #if IPDUO_HAS_DUO_SDK
-        self.visibilityPriority(.high)
+        if #available(iOS 27.0, *) {
+            self.visibilityPriority(.high)
+        } else {
+            self
+        }
         #else
         self
         #endif
@@ -250,7 +254,11 @@ extension ToolbarContent {
     @ToolbarContentBuilder
     func duoPriorityLow() -> some ToolbarContent {
         #if IPDUO_HAS_DUO_SDK
-        self.visibilityPriority(.low)
+        if #available(iOS 27.0, *) {
+            self.visibilityPriority(.low)
+        } else {
+            self
+        }
         #else
         self
         #endif

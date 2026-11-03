@@ -273,8 +273,7 @@ struct AlarmEditorSheet: View {
                 .duoPriorityHigh()
             }
             .onAppear {
-                var calendar = Calendar.current
-                time = calendar.date(from: DateComponents(hour: draft.alarm.hour, minute: draft.alarm.minute)) ?? Date()
+                time = Calendar.current.date(from: DateComponents(hour: draft.alarm.hour, minute: draft.alarm.minute)) ?? Date()
                 switch draft.alarm.sound {
                 case .tone: kind = .tone
                 case .song: kind = .song

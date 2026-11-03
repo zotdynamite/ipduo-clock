@@ -4,7 +4,6 @@ import SwiftUI
 struct AlarmsScreen: View {
     @EnvironmentObject private var model: AppModel
     @State private var editor: AlarmDraft?
-    @State private var columns = NavigationSplitViewVisibility.automatic
 
     var body: some View {
         NavigationSplitView {
@@ -65,11 +64,7 @@ struct AlarmsScreen: View {
             }
         }
         .navigationSplitViewStyle(.balanced)
-        .navigationSplitViewColumnVisibility($columns)
         .onAppear {
-            if ScreenshotSession.screen?.hasPrefix("regular-") == true {
-                columns = .all
-            }
             if model.presentAddAlarm {
                 editor = AlarmDraft(alarm: nil)
             }

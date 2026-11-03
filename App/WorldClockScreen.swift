@@ -4,7 +4,6 @@ import SwiftUI
 struct WorldClockScreen: View {
     @EnvironmentObject private var model: AppModel
     @State private var adding = false
-    @State private var columns = NavigationSplitViewVisibility.automatic
 
     var body: some View {
         NavigationSplitView {
@@ -55,12 +54,6 @@ struct WorldClockScreen: View {
             }
         }
         .navigationSplitViewStyle(.balanced)
-        .navigationSplitViewColumnVisibility($columns)
-        .onAppear {
-            if ScreenshotSession.screen?.hasPrefix("regular-") == true {
-                columns = .all
-            }
-        }
         .sheet(isPresented: $adding) {
             CityPicker()
         }

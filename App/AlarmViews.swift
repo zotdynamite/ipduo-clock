@@ -4,6 +4,7 @@ import SwiftUI
 struct AlarmsScreen: View {
     @EnvironmentObject private var model: AppModel
     @State private var editor: AlarmDraft?
+    @State private var columns = NavigationSplitViewVisibility.automatic
 
     var body: some View {
         NavigationSplitView {
@@ -64,7 +65,11 @@ struct AlarmsScreen: View {
             }
         }
         .navigationSplitViewStyle(.balanced)
+        .navigationSplitViewColumnVisibility($columns)
         .onAppear {
+            if ScreenshotSession.screen?.hasPrefix("regular-") == true {
+                columns = .all
+            }
             if model.presentAddAlarm {
                 editor = AlarmDraft(alarm: nil)
             }
@@ -111,6 +116,7 @@ private struct AlarmRow: View {
         }
         .padding(.vertical, 4)
         .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("alarm-\(alarm.label.isEmpty ? "Alarm" : alarm.label)")
     }
 
     private var rowSubtitle: String {
@@ -154,6 +160,7 @@ private struct AlarmPreview: View {
                     Label("Edit Alarm", systemImage: "pencil")
                 }
                 .buttonStyle(.borderedProminent)
+                .accessibilityIdentifier("edit-alarm")
                 .padding(.top, 8)
             }
             .padding()
@@ -269,6 +276,7 @@ struct AlarmEditorSheet: View {
                     } label: {
                         Label("Save Alarm", systemImage: "checkmark")
                     }
+                    .accessibilityIdentifier("save-alarm")
                 }
                 .duoPriorityHigh()
             }

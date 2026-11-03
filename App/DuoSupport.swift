@@ -54,8 +54,12 @@ struct DuoFallbackArrangement<Primary: View, Secondary: View>: View {
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
+    private var forceRegular: Bool {
+        ScreenshotSession.screen?.hasPrefix("regular-") == true
+    }
+
     var body: some View {
-        if horizontalSizeClass != .regular {
+        if horizontalSizeClass != .regular && !forceRegular {
             compact
         } else {
             GeometryReader { proxy in

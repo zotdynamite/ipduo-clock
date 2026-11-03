@@ -368,6 +368,7 @@ struct ClockSideColumn: View {
 
                 Text("World Clock")
                     .font(.title3.weight(.semibold))
+                    .accessibilityIdentifier("world-clock-heading")
                     .padding(.horizontal, 4)
 
                 HereCard()
@@ -493,6 +494,7 @@ struct StandByView: View {
                                 .padding(.vertical, 10)
                                 .background(.ultraThinMaterial, in: Capsule())
                         }
+                        .accessibilityIdentifier("standby-close")
                         .padding(.top, 8)
                     }
                     .padding()

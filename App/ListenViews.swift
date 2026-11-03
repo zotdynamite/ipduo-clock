@@ -123,6 +123,7 @@ private struct MusicBrowser: View {
                 }
                 .buttonStyle(.borderedProminent)
             }
+            .accessibilityIdentifier("apple-music")
         } else if songs.isEmpty {
             ContentUnavailableView(
                 "No Songs",
@@ -224,6 +225,7 @@ private struct ShowRow: View {
                 Label(model.isSubscribed(show.collectionId) ? "Subscribed" : "Subscribe", systemImage: model.isSubscribed(show.collectionId) ? "checkmark" : "plus")
             }
             .disabled(show.feed == nil || model.isSubscribed(show.collectionId))
+            .accessibilityIdentifier(model.isSubscribed(show.collectionId) ? "podcast-subscribed" : "podcast-subscribe")
         }
     }
 }
@@ -419,6 +421,7 @@ struct NowPlayingView: View {
         }
         .background(StageBackground(tint: model.accentColor))
         .screenshotMarker()
+        .accessibilityIdentifier("now-playing")
         .navigationTitle("Now Playing")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -489,8 +492,10 @@ struct MiniPlayer: View {
                     .frame(width: 36, height: 36)
             }
             .accessibilityLabel(playback.isPlaying ? "Pause" : "Play")
+            .accessibilityIdentifier("playback-toggle")
         }
         .padding(.horizontal, 12)
+        .accessibilityIdentifier("mini-player")
         .padding(.vertical, 8)
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
         .overlay(alignment: .bottom) {

@@ -5,10 +5,14 @@ struct TimersScreen: View {
     @EnvironmentObject private var model: AppModel
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
+    private var showsBoth: Bool {
+        horizontalSizeClass == .regular || ScreenshotSession.screen == "regular-timers"
+    }
+
     var body: some View {
         NavigationStack {
             Group {
-                if horizontalSizeClass == .regular {
+                if showsBoth {
                     AdaptiveArrangement(style: .split, axes: [.horizontal, .vertical]) {
                         TimerPage()
                     } secondary: {
@@ -36,13 +40,14 @@ struct TimersScreen: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItemGroup(placement: .primaryAction) {
-                    if model.timerSegment == .stopwatch || horizontalSizeClass == .regular {
+                    if model.timerSegment == .stopwatch || showsBoth {
                         Button {
                             Haptics.tap(enabled: model.hapticsEnabled)
                             model.stopwatch.lap(at: Date())
                         } label: {
                             Label("Lap", systemImage: "flag")
                         }
+                        .accessibilityIdentifier("lap-button")
                         .disabled(!model.stopwatch.isRunning && model.stopwatch.elapsed(at: Date()) == 0)
                         Button {
                             Haptics.tap(enabled: model.hapticsEnabled)
@@ -51,7 +56,7 @@ struct TimersScreen: View {
                             Label("Reset Stopwatch", systemImage: "arrow.counterclockwise")
                         }
                     }
-                    if model.timerSegment == .timer || horizontalSizeClass == .regular {
+                    if model.timerSegment == .timer || showsBoth {
                         Button {
                             Haptics.tap(enabled: model.hapticsEnabled)
                             model.countdown.reset()
@@ -129,6 +134,7 @@ private struct TimerPage: View {
                                         .padding(.vertical, 8)
                                 }
                                 .buttonStyle(.bordered)
+                                .accessibilityIdentifier("preset-\(presetLabel(preset))")
                                 .tint(abs(model.countdown.duration - preset) < 0.5 ? model.accentColor : .secondary)
                             }
                         }
@@ -188,6 +194,7 @@ private struct StopwatchPage: View {
                         Label("Lap", systemImage: "flag")
                             .frame(maxWidth: .infinity)
                     }
+                    .accessibilityIdentifier("lap-button")
                     .buttonStyle(.bordered)
                     .disabled(elapsed == 0 && !model.stopwatch.isRunning)
                     Button {
@@ -203,6 +210,7 @@ private struct StopwatchPage: View {
                 List(model.stopwatch.laps) { lap in
                     HStack {
                         Text("Lap \(lap.index)")
+                            .accessibilityIdentifier("lap-\(lap.index)")
                         Spacer(minLength: 8)
                         Text(ElapsedFormat.string(from: lap.split))
                             .monospacedDigit()

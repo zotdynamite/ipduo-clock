@@ -50,8 +50,9 @@ final class ScreenshotUITests: XCTestCase {
         XCUIDevice.shared.orientation = orientation
 
         let readyTimeout: TimeInterval = (name == "listen-podcasts" || name == "mini-player" || name == "now-playing") ? 90 : 25
+        fputs("IPDUO_CAPTURE \(name)\n", stderr)
         let ready = app.descendants(matching: .any)["screenshot-ready"]
-        XCTAssertTrue(ready.waitForExistence(timeout: readyTimeout), "Timed out waiting for \(name)")
+        require(ready, timeout: readyTimeout, screen: name, what: "screenshot-ready", app: app)
         waitForOrientation(landscape: landscape, app: app)
         RunLoop.current.run(until: Date().addingTimeInterval(landscape ? 1.0 : 0.6))
 
@@ -71,48 +72,61 @@ final class ScreenshotUITests: XCTestCase {
     private func assertContent(_ name: String, app: XCUIApplication) {
         switch name {
         case "clock-analog":
-            XCTAssertTrue(app.descendants(matching: .any)["face-analog"].waitForExistence(timeout: 5))
+            require(mark("face-analog", app), timeout: 5, screen: name, what: "face-analog", app: app)
         case "clock-digital":
-            XCTAssertTrue(app.descendants(matching: .any)["face-digital"].waitForExistence(timeout: 5))
+            require(mark("face-digital", app), timeout: 5, screen: name, what: "face-digital", app: app)
         case "clock-flip":
-            XCTAssertTrue(app.descendants(matching: .any)["face-flip"].waitForExistence(timeout: 5))
+            require(mark("face-flip", app), timeout: 5, screen: name, what: "face-flip", app: app)
         case "clock-ambient":
-            XCTAssertTrue(app.descendants(matching: .any)["face-ambient"].waitForExistence(timeout: 5))
+            require(mark("face-ambient", app), timeout: 5, screen: name, what: "face-ambient", app: app)
         case "world":
-            XCTAssertTrue(app.staticTexts["Tokyo"].waitForExistence(timeout: 5))
+            require(app.staticTexts["Tokyo"], timeout: 5, screen: name, what: "Tokyo", app: app)
         case "alarms":
-            XCTAssertTrue(app.staticTexts["Wake"].waitForExistence(timeout: 5))
+            // The row combines its time and "Wake · …" subtitle into one element, so the label is not a static text named Wake.
+            require(mark("alarm-Wake", app), timeout: 5, screen: name, what: "alarm-Wake", app: app)
         case "add-alarm":
-            XCTAssertTrue(app.buttons["Save Alarm"].waitForExistence(timeout: 5))
+            require(mark("save-alarm", app), timeout: 8, screen: name, what: "save-alarm", app: app)
         case "timer":
-            XCTAssertTrue(app.buttons["5m"].waitForExistence(timeout: 5))
+            require(mark("preset-5m", app), timeout: 5, screen: name, what: "preset-5m", app: app)
         case "stopwatch":
-            XCTAssertTrue(app.staticTexts["Lap 1"].waitForExistence(timeout: 5))
+            require(mark("lap-1", app), timeout: 5, screen: name, what: "lap-1", app: app)
         case "listen-music":
-            XCTAssertTrue(app.staticTexts["Apple Music"].waitForExistence(timeout: 5))
+            require(mark("apple-music", app), timeout: 5, screen: name, what: "apple-music", app: app)
         case "listen-podcasts":
-            XCTAssertTrue(app.buttons["Subscribe"].waitForExistence(timeout: 8), "Expected live iTunes podcast results")
+            require(mark("podcast-subscribe", app), timeout: 8, screen: name, what: "podcast-subscribe", app: app)
         case "mini-player":
-            XCTAssertTrue(app.buttons["Pause"].exists || app.buttons["Play"].waitForExistence(timeout: 5))
+            require(mark("mini-player", app), timeout: 5, screen: name, what: "mini-player", app: app)
+            require(mark("playback-toggle", app), timeout: 5, screen: name, what: "playback-toggle", app: app)
         case "now-playing":
-            XCTAssertTrue(app.navigationBars["Now Playing"].waitForExistence(timeout: 5))
-            XCTAssertFalse(app.staticTexts["Nothing playing"].exists)
+            require(mark("now-playing", app), timeout: 5, screen: name, what: "now-playing", app: app)
+            XCTAssertFalse(app.staticTexts["Nothing playing"].exists, "IPDUO_FAIL screen=\(name) still idle")
         case "settings":
-            XCTAssertTrue(app.staticTexts["24-hour clock"].waitForExistence(timeout: 5))
+            require(mark("setting-24-hour", app), timeout: 5, screen: name, what: "setting-24-hour", app: app)
         case "standby":
-            XCTAssertTrue(app.buttons["Close"].waitForExistence(timeout: 5))
+            require(mark("standby-close", app), timeout: 5, screen: name, what: "standby-close", app: app)
         case "regular-clock":
-            XCTAssertTrue(app.staticTexts["World Clock"].waitForExistence(timeout: 5), "Expected the regular-width side column")
+            require(mark("world-clock-heading", app), timeout: 8, screen: name, what: "world-clock-heading", app: app)
         case "regular-world":
-            XCTAssertTrue(app.staticTexts["Sunrise"].waitForExistence(timeout: 5))
+            require(mark("sunrise", app), timeout: 8, screen: name, what: "sunrise", app: app)
         case "regular-alarms":
-            XCTAssertTrue(app.buttons["Edit Alarm"].waitForExistence(timeout: 5))
+            require(mark("edit-alarm", app), timeout: 8, screen: name, what: "edit-alarm", app: app)
         case "regular-timers":
-            XCTAssertTrue(app.buttons["5m"].waitForExistence(timeout: 5))
-            XCTAssertTrue(app.buttons["Lap"].exists)
+            require(mark("preset-5m", app), timeout: 5, screen: name, what: "preset-5m", app: app)
+            require(mark("lap-button", app), timeout: 5, screen: name, what: "lap-button", app: app)
         default:
             break
         }
+    }
+
+    private func mark(_ identifier: String, _ app: XCUIApplication) -> XCUIElement {
+        app.descendants(matching: .any)[identifier]
+    }
+
+    private func require(_ element: XCUIElement, timeout: TimeInterval, screen: String, what: String, app: XCUIApplication) {
+        if element.waitForExistence(timeout: timeout) { return }
+        let snippet = String(app.debugDescription.prefix(3000))
+        fputs("IPDUO_FAIL screen=\(screen) missing=\(what)\n\(snippet)\n", stderr)
+        XCTFail("IPDUO_FAIL screen=\(screen) missing=\(what)")
     }
 
     private func waitForOrientation(landscape: Bool, app: XCUIApplication) {

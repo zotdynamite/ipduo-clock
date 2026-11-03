@@ -51,6 +51,7 @@ struct SettingsScreen: View {
                 }
                 Section("Time") {
                     Toggle("24-hour clock", isOn: $model.use24Hour)
+                        .accessibilityIdentifier("setting-24-hour")
                         .onChange(of: model.use24Hour) { _, _ in model.touch() }
                     Toggle("Show seconds", isOn: $model.showSeconds)
                         .onChange(of: model.showSeconds) { _, _ in model.touch() }

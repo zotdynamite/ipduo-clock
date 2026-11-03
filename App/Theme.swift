@@ -98,7 +98,7 @@ enum ClockFormat {
     }
 
     static func digits(from date: Date, use24Hour: Bool) -> String {
-        var calendar = Calendar.current
+        let calendar = Calendar.current
         let hour = calendar.component(.hour, from: date)
         let minute = calendar.component(.minute, from: date)
         let shownHour = use24Hour ? hour : {
@@ -119,7 +119,7 @@ enum ClockFormat {
     }
 
     static func hourMinute(hour: Int, minute: Int, use24Hour: Bool) -> String {
-        var calendar = Calendar.current
+        let calendar = Calendar.current
         guard let date = calendar.date(from: DateComponents(hour: hour, minute: minute)) else {
             return String(format: "%02d:%02d", hour, minute)
         }

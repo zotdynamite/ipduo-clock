@@ -35,7 +35,11 @@ struct AdaptiveArrangement<Primary: View, Secondary: View>: View {
 
     var body: some View {
         #if IPDUO_HAS_DUO_SDK
-        DuoSystemArrangement(style: style, axes: axes, primary: primary, secondary: secondary)
+        if #available(iOS 27.1, *) {
+            DuoSystemArrangement(style: style, axes: axes, primary: primary, secondary: secondary)
+        } else {
+            DuoFallbackArrangement(style: style, axes: axes, primary: primary, secondary: secondary)
+        }
         #else
         DuoFallbackArrangement(style: style, axes: axes, primary: primary, secondary: secondary)
         #endif
@@ -104,6 +108,7 @@ struct DuoFallbackArrangement<Primary: View, Secondary: View>: View {
 }
 
 #if IPDUO_HAS_DUO_SDK
+@available(iOS 27.1, *)
 struct DuoSystemArrangement<Primary: View, Secondary: View>: View {
     var style: AdaptiveArrangement<Primary, Secondary>.Style
     var axes: Axis.Set
@@ -133,6 +138,7 @@ struct DuoSystemArrangement<Primary: View, Secondary: View>: View {
 enum ReservedRegions {
     static func division(in proxy: GeometryProxy) -> LayoutRect? {
         #if IPDUO_HAS_DUO_SDK
+        guard #available(iOS 27.1, *) else { return nil }
         guard let frame = proxy.reservedRegions(kind: .division).first?.frame else { return nil }
         return LayoutRect(x: frame.origin.x, y: frame.origin.y, width: frame.size.width, height: frame.size.height)
         #else
@@ -143,7 +149,8 @@ enum ReservedRegions {
 
     static func occlusions(in proxy: GeometryProxy) -> [LayoutRect] {
         #if IPDUO_HAS_DUO_SDK
-        proxy.reservedRegions(kind: .occlusion).map { region in
+        guard #available(iOS 27.1, *) else { return [] }
+        return proxy.reservedRegions(kind: .occlusion).map { region in
             let frame = region.frame
             return LayoutRect(x: frame.origin.x, y: frame.origin.y, width: frame.size.width, height: frame.size.height)
         }
@@ -203,7 +210,11 @@ extension View {
     @ViewBuilder
     func duoBackgroundExtension() -> some View {
         #if IPDUO_HAS_IOS26_SDK
-        self.backgroundExtensionEffect()
+        if #available(iOS 26.0, *) {
+            self.backgroundExtensionEffect()
+        } else {
+            self
+        }
         #else
         self
         #endif
@@ -212,7 +223,11 @@ extension View {
     @ViewBuilder
     func duoSplitRatio(_ ratio: CGFloat) -> some View {
         #if IPDUO_HAS_DUO_SDK
-        self.splitArrangementLayoutRatio(ratio)
+        if #available(iOS 27.1, *) {
+            self.splitArrangementLayoutRatio(ratio)
+        } else {
+            self
+        }
         #else
         self
         #endif
@@ -221,7 +236,11 @@ extension View {
     @ViewBuilder
     func duoPrefersTabBar() -> some View {
         #if IPDUO_HAS_DUO_SDK
-        self.toolbarVerticalCompressionBehavior(.prefersTabBar)
+        if #available(iOS 27.1, *) {
+            self.toolbarVerticalCompressionBehavior(.prefersTabBar)
+        } else {
+            self
+        }
         #else
         self
         #endif
@@ -230,7 +249,11 @@ extension View {
     @ViewBuilder
     func duoPrefersToolbar() -> some View {
         #if IPDUO_HAS_DUO_SDK
-        self.toolbarVerticalCompressionBehavior(.prefersToolbarItems)
+        if #available(iOS 27.1, *) {
+            self.toolbarVerticalCompressionBehavior(.prefersToolbarItems)
+        } else {
+            self
+        }
         #else
         self
         #endif

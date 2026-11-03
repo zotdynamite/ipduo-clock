@@ -238,7 +238,7 @@ private struct FlapDigit: View {
             }
         }
         .aspectRatio(0.72, contentMode: .fit)
-        .onChange(of: digit) { newValue in
+        .onChange(of: digit) { _, newValue in
             guard newValue != shown else { return }
             withAnimation(.easeIn(duration: 0.12)) { angle = -88 }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {

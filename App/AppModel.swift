@@ -237,8 +237,14 @@ final class AppModel: ObservableObject {
             Task { await scheduleSnooze(for: alarm) }
         default:
             ringingAlarm = alarm
-            Task { await playback.playAlarm(alarm) }
+            let localURL = episodeFile(for: alarm)
+            Task { await playback.playAlarm(alarm, localEpisodeURL: localURL) }
         }
+    }
+
+    private func episodeFile(for alarm: Alarm) -> URL? {
+        guard case .episode(let id, _, _) = alarm.sound else { return nil }
+        return localFile(for: id)
     }
 
     func stopRinging(playback: PlaybackCenter) {
@@ -399,14 +405,14 @@ final class AppModel: ObservableObject {
         return content
     }
 
-    static var supportDirectory: URL {
+    nonisolated static var supportDirectory: URL {
         let url = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("IpduoClock", isDirectory: true)
         try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
         return url
     }
 
-    static var downloadsDirectory: URL {
+    nonisolated static var downloadsDirectory: URL {
         let url = supportDirectory.appendingPathComponent("Downloads", isDirectory: true)
         try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
         return url
